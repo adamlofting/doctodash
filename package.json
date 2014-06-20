@@ -1,0 +1,26 @@
+{
+  "name": "doctodash",
+  "version": "0.0.1",
+  "description": "Pull from a Google Sheet, format as needed, add some caching",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adamlofting/doctodash.git"
+  },
+  "author": "Adam Lofting <contactme@adamlofting.com> (http://adamlofting.com/)",
+  "license": "MPL2",
+  "bugs": {
+    "url": "https://github.com/adamlofting/doctodash/issues"
+  },
+  "homepage": "https://github.com/adamlofting/doctodash",
+  "dependencies": {
+    "express": "~4.4.3",
+    "async": "~0.9.0",
+    "csv": "~0.3.7",
+    "node-cache": "~1.0.0",
+    "request": "~2.36.0"
+  }
+}
