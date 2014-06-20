@@ -5,5 +5,6 @@ exports.validTeams = [
 'qa',
 'webdev',
 'sumo',
-'github'
+'github',
+'bugzilla'
 ];
