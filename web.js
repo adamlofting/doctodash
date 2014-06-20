@@ -126,6 +126,13 @@ function isValidTeamName (team) {
   return false;
 }
 
+// allow CORS so this can be graphed elsewhere in JS
+app.all('*', function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 // default gets all mozilla
 app.get('/', function (req, res) {
   getData('all', function (err, result) {
@@ -133,7 +140,7 @@ app.get('/', function (req, res) {
   });
 });
 
-//
+// team specific routes
 app.get('/:team', function (req, res) {
   var team = req.params.team;
   if (isValidTeamName(team)) {
