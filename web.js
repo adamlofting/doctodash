@@ -3,6 +3,7 @@ var csv = require('csv');
 var request = require('request');
 var validViews = require('./validteams.js').validViews;
 var validTableauViews = require('./validteams.js').validTableauViews;
+var dates = require('./dates.js');
 
 var NodeCache = require( "node-cache" );
 var myCache = new NodeCache();
@@ -117,17 +118,17 @@ function importOriginalCSV (view, callback) {
 
 
 function processTableauCSV(view, fetchedCSV, callback) {
-  var output = [];
+  var output = dates.weeksOutputTemplate();
 
   function addToOutput(date, activeCount, newCount) {
     activeCount = toInt(activeCount);
     newCount = toInt(newCount);
-    var row = {
-      'wkcommencing': date,
-      'totalactive': activeCount,
-      'new': newCount
-    };
-    output.push(row);
+    for (var i = 0; i < output.length; i++) {
+      if(output[i].wkcommencing === date) {
+        output[i].totalactive = activeCount;
+        output[i].new = newCount;
+      }
+    }
   }
 
   csv()
