@@ -1,4 +1,4 @@
-exports.validTeams = [
+exports.validViews = [
 'codingfirefoxdesktop',
 'codingfirefoxos',
 'codingfirefoxandroid',
@@ -7,4 +7,15 @@ exports.validTeams = [
 'sumo',
 'github',
 'bugzilla'
+];
+
+exports.validTableauViews = [
+'bugzilla',
+'sumo',
+'github',
+'firefoxos',
+'firefox',
+'firefoxforandroid',
+'qa',
+'unclaimed'
 ];
