@@ -17,5 +17,6 @@ exports.validTableauViews = [
 'firefox',
 'firefoxforandroid',
 'qa',
-'unclaimed'
+'unclaimed',
+'all'
 ];
