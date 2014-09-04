@@ -11,7 +11,7 @@ var myCache = new NodeCache();
 var express = require("express");
 var app = express();
 
-var GDOC_URL_ORIGINAL = 'https://docs.google.com/spreadsheets/d/1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A/export?format=csv&id=1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A&gid=1977400704';
+// var GDOC_URL_ORIGINAL = 'https://docs.google.com/spreadsheets/d/1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A/export?format=csv&id=1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A&gid=1977400704';
 var GDOC_URL_TABLEAU = 'https://docs.google.com/spreadsheets/d/1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A/export?format=csv&id=1NdHzBIDKduAu6-vvQx6iy-93zCzAqUKk4x_eanDxv1A&gid=1758040737';
 
 
@@ -47,75 +47,9 @@ function transformNameToCompare (s) {
   return s;
 }
 
-
 /**
- * CSV PROCESSING
+ * CSV
  */
-
-function processOriginalCSV(view, fetchedCSV, callback) {
-  var output = [];
-  var colActive = view + '_active';
-  var colNew = view + '_new';
-
-  function addToOutput(date, activeCount, newCount) {
-    activeCount = toInt(activeCount);
-    newCount = toInt(newCount);
-    var row = {
-      'wkcommencing': date,
-      'totalactive': activeCount,
-      'new': newCount
-    };
-    output.push(row);
-  }
-
-  csv()
-    .from.string(fetchedCSV, {
-      columns: true,
-      delimiter: ',',
-      escape: '"',
-    })
-    .to.stream(process.stdout, {
-      columns: ['date', colActive, colNew]
-    })
-    .transform(function (row) {
-      if (row.date) {
-        addToOutput(row.date, row[colActive], row[colNew]);
-      }
-    })
-    .on('end', function (count) {
-      callback(null, output);
-
-    })
-    .on('error', function (error) {
-      console.log(error.message);
-      callback(null);
-    });
-}
-
-function importOriginalCSV (view, callback) {
-  // get the latest from Google
-  request.get(GDOC_URL_ORIGINAL,
-    function (err, res, body) {
-      if (!err && res.statusCode === 200) {
-        var csv = body;
-        processOriginalCSV(view, csv, function processedCSV(err, res) {
-          if (err) {
-            console.log(err);
-            callback(err);
-          }
-          callback(null, res);
-        });
-      } else {
-        console.log("Error fetching Google Doc");
-        console.log(err);
-        console.log(res.statusCode);
-        callback(null);
-      }
-    }
-  );
-}
-
-
 
 function processTableauCSV(view, fetchedCSV, callback) {
   var output = dates.weeksOutputTemplate();
@@ -182,45 +116,9 @@ function importTableauCSV (view, callback) {
   );
 }
 
-
-
-
-
 /**
- * OUTPUT DATA
+ * DATA
  */
-
-function getData (view, callback) {
-  // timer to check impact of loading
-  console.time('getView');
-
-  // check cache
-  var cache = myCache.get(view);
-
-  // check if anythign is saved in the cache
-  if (cache[view]) {
-    // Yes, use the cached list
-    console.log('loaded from cache');
-    console.timeEnd('getView');
-
-    callback(null, cache[view]);
-
-  } else {
-    // No, get this from gdocs
-    console.log('loading from google docs');
-
-    importOriginalCSV(view, function (err, result) {
-      if (err) {
-        console.log(err);
-        return callback(err);
-      }
-      console.timeEnd('getView');
-      myCache.set(view, result, 600 ); // 10 mins
-      callback(null, result);
-    });
-  }
-}
-
 
 function getDataTableau (view, callback) {
   // timer to check impact of loading
@@ -254,11 +152,6 @@ function getDataTableau (view, callback) {
   }
 }
 
-
-
-
-
-
 /**
  * ROUTING
  */
@@ -272,11 +165,10 @@ app.all('*', function (req, res, next) {
 
 // default gets all mozilla
 app.get('/', function (req, res) {
-  getData('all', function (err, result) {
+  getDataTableau('all', function (err, result) {
     res.json(result);
   });
 });
-
 
 // view specific routes
 app.get('/tab/:view', function (req, res) {
@@ -292,24 +184,6 @@ app.get('/tab/:view', function (req, res) {
     });
   }
 });
-
-// view specific routes
-app.get('/:view', function (req, res) {
-  var view = req.params.view;
-  if (isValidViewName(view)) {
-    getData(view, function (err, result) {
-      res.json(result);
-    });
-  } else {
-    res.json({
-      error: 'invalid view name',
-      try_one_of_these_instead: validViews
-    });
-  }
-});
-
-
-
 
 /**
  * START THE SERVER
