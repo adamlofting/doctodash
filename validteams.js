@@ -6,7 +6,8 @@ exports.validViews = [
 'webdev',
 'sumo',
 'github',
-'bugzilla'
+'bugzilla',
+'reps'
 ];
 
 exports.validTableauViews = [
@@ -17,6 +18,7 @@ exports.validTableauViews = [
 'firefox',
 'firefoxforandroid',
 'qa',
+'reps',
 'unclaimed',
 'all'
 ];
